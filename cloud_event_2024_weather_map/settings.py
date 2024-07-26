@@ -28,11 +28,21 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-3jdt@ts@h1!a#v#3&zj8bxiy+rmvk30kq7$!qk-mqc*=d)tj%i'
+# This will get the Azure hostname
+WEBSITE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = WEBSITE_HOSTNAME == None
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['localhost']
+#ALLOWED_HOSTS = [] if DEBUG else [WEBSITE_HOSTNAME]
+ALLOWED_HOSTS = [] if DEBUG else [WEBSITE_HOSTNAME, f"{WEBSITE_HOSTNAME}.azurewebsites.net"]
+
+
+if not DEBUG:
+    #CSRF_TRUSTED_ORIGINS = ['https://{WEBSITE_HOSTNAME}', 'https://*.azurewebsites.net']
+    CSRF_TRUSTED_ORIGINS = [f'https://{WEBSITE_HOSTNAME}', f'https://{WEBSITE_HOSTNAME}.azurewebsites.net']
 
 
 # Application definition
@@ -44,7 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'weather'
+    'weather',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -124,13 +135,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+"""
 STATIC_URL ="/static/"
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
-
+"""
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+DEFAULT_FILE_STORAGE = 'weather.storages.AzureMediaStorage'
+STATICFILES_STORAGE = 'weather.storages.AzureStaticStorage'
+STATIC_URL = 'shucloudevent2024.blob.core.windows.net/static/'
+MEDIA_URL = 'shucloudevent2024.blob.core.windows.net/media/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
