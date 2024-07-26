@@ -34,3 +34,29 @@ def weather_view(request):
             return JsonResponse({'error': 'Unable to fetch weather data'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method or missing coordinates'}, status=400)
+
+
+def space_view(request):
+
+    # Get API data
+    api_key = "ODssD8zAvr10XyJxGBRCvOeh6Q7WXWzwaYilGyTG"
+    url = f"https://api.nasa.gov/planetary/apod?count=6&api_key={api_key}"
+
+    nasa_data = requests.get(url.format(api_key)).json() # Request the API data and convert the JSON to Python data types
+
+    #
+
+    photos = []
+    for data in nasa_data:
+        #print(data['url'])
+        photos.append({
+            'url': data['url'],
+        })
+
+ #
+
+    # Return context to home page
+    context = {
+        'photos': photos,
+    }
+    return render(request, 'weather/space.html', context)
